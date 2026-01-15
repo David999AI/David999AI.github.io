@@ -293,34 +293,43 @@ const WORD_DB = [
     { 
         char: "人", pinyin: "rén", trace: true, 
         strokes: [
-            [{x:50,y:10}, {type:'Q', cx:50, cy:60, x:10, y:80}], // 撇 (自然弯曲)
-            [{x:50,y:35}, {type:'Q', cx:60, cy:60, x:90, y:80}]  // 捺 (自然弯曲)
+            [{x:50,y:10}, {type:'Q', cx:40, cy:40, x:10, y:80}], // 撇 (自然弯曲)
+            [{x:50,y:35}, {type:'Q', cx:60, cy:55, x:90, y:80}]  // 捺 (自然弯曲)
         ] 
     },
     { 
         char: "大", pinyin: "dà", trace: true, 
         strokes: [
             [{x:15,y:40},{x:85,y:40}], // 横
-            [{x:50,y:10}, {type:'Q', cx:50, cy:60, x:10, y:80}], // 撇
-            [{x:50,y:40}, {type:'Q', cx:60, cy:60, x:90, y:80}]  // 捺
+            [{x:50,y:10}, {type:'Q', cx:40, cy:50, x:10, y:85}], // 撇
+            [{x:50,y:40}, {type:'Q', cx:65, cy:60, x:90, y:85}]  // 捺
         ] 
     },
     { 
         char: "天", pinyin: "tiān", trace: true, 
         strokes: [
-            [{x:25,y:20},{x:75,y:20}], 
-            [{x:10,y:45},{x:90,y:45}],
-            [{x:50,y:30}, {type:'Q', cx:45, cy:60, x:10, y:85}], 
+            [{x:25,y:30},{x:75,y:30}], 
+            [{x:10,y:55},{x:90,y:55}],
+            [{x:50,y:30}, {type:'Q', cx:35, cy:60, x:10, y:85}], 
             [{x:50,y:55}, {type:'Q', cx:65, cy:70, x:90, y:85}]
         ] 
     },
     { 
+        char: "火", pinyin: "huǒ", trace: true,
+        strokes: [
+            [{x:15,y:50}, {type:'Q', cx:20, cy:60, x:25, y:70}], // 点
+            [{x:85,y:50}, {type:'Q', cx:80, cy:60, x:75, y:70}], // 短撇
+            [{x:50,y:20}, {type:'Q', cx:40, cy:50, x:10, y:85}], // 竖撇
+            [{x:50,y:40}, {type:'Q', cx:65, cy:60, x:90, y:85}]  // 捺
+        ]
+    },
+    { 
         char: "木", pinyin: "mù", trace: true,
         strokes: [
-            [{x:15,y:33}, {x:85,y:33}], // 横
+            [{x:15,y:40}, {x:85,y:40}], // 横
             [{x:50,y:15}, {x:50,y:85}], // 竖
-            [{x:50,y:33}, {type:'Q', cx:35, cy:65, x:15, y:85}], // 撇
-            [{x:50,y:33}, {type:'Q', cx:65, cy:65, x:85, y:85}]  // 捺
+            [{x:50,y:40}, {type:'Q', cx:35, cy:60, x:15, y:85}], // 撇
+            [{x:50,y:40}, {type:'Q', cx:65, cy:60, x:85, y:85}]  // 捺
         ]
     },
     { 
@@ -352,7 +361,6 @@ const WORD_DB = [
     
     // --- 100生字快速扩充 (通用配置，用于射击/认读) ---
     // 为了代码简洁，这里列出常见字，实际运行时会随机抽取
-    { char: "火", pinyin: "huǒ"},
     { char: "山", pinyin: "shān" }, { char: "石", pinyin: "shí" }, { char: "田", pinyin: "tián" },
     { char: "土", pinyin: "tǔ" }, { char: "水", pinyin: "shuǐ" }, { char: "云", pinyin: "yún" },
     { char: "雨", pinyin: "yǔ" }, { char: "风", pinyin: "fēng" }, { char: "花", pinyin: "huā" },
