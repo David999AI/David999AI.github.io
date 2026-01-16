@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一年级生字大挑战 - 单文件版</title>
+    <!-- 引入 Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <!-- 引入 Hanzi Writer 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4facfe;
+            --secondary-color: #00f2fe;
+            --success-color: #4caf50;
+            --error-color: #ff5252;
+            --warning-color: #ffb142;
+            --text-color: #2c3e50;
+            --bg-color: #e0f7fa;
+        }
+
+        body {
+            font-family: 'Quicksand', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '文';
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            font-size: 5rem;
+            color: rgba(255,255,255,0.2);
+            transform: rotate(-15deg);
+        }
+
+        body::after {
+            content: '字';
+            position: absolute;
+            bottom: 10%;
+            right: 5%;
+            font-size: 5rem;
+            color: rgba(255,255,255,0.2);
+            transform: rotate(15deg);
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            width: 90%;
+            max-width: 650px;
+            text-align: center;
+            border: 8px solid #fff;
+            position: relative;
+            z-index: 1;
+        }
+
+        header h1 {
+            color: #2980b9;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: 2px;
+        }
+
+        .score-board {
+            display: inline-block;
+            background: linear-gradient(to right, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+            margin-bottom: 1.5rem;
+        }
+
+        .test-section {
+            margin: 1.5rem 0;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .char-display {
+            font-size: 9rem;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            display: inline-block;
+            width: 220px;
+            height: 220px;
+            line-height: 220px;
+            background-color: #fff;
+            background-image: 
+                linear-gradient(red 1px, transparent 1px),
+                linear-gradient(90deg, red 1px, transparent 1px),
+                linear-gradient(rgba(255,0,0,0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,0,0,0.3) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 50% 50%, 50% 50%;
+            border: 4px solid red;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .option-btn {
+            padding: 1.2rem;
+            font-size: 1.8rem;
+            border: none;
+            background: #fff;
+            color: #3498db;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #d6eaf8;
+            transition: all 0.1s;
+            border: 2px solid #d6eaf8;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #d6eaf8;
+        }
+
+        .option-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #d6eaf8;
+        }
+
+        .option-btn.correct {
+            background-color: var(--success-color);
+            color: white;
+            box-shadow: 0 6px 0 #388e3c;
+            border-color: #388e3c;
+        }
+
+        .option-btn.wrong {
+            background-color: var(--error-color);
+            color: white;
+            box-shadow: 0 6px 0 #d32f2f;
+            border-color: #d32f2f;
+        }
+
+        #character-target {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            background-color: #fff;
+            border: 4px solid #e74c3c;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background-image: 
+                linear-gradient(rgba(231, 76, 60, 0.2) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(231, 76, 60, 0.2) 2px, transparent 2px);
+            background-position: center;
+            background-size: 100% 100%;
+        }
+
+        .controls {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .game-btn {
+            padding: 0.8rem 1.8rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        #btn-hint { background: #f1c40f; color: white; }
+        #btn-reset { background: #bdc3c7; color: white; }
+        #btn-next { 
+            background: #2ecc71; 
+            color: white;
+            padding: 1rem 3rem;
+            font-size: 1.4rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #btn-switch-mode { 
+            background: #9b59b6; 
+            color: white;
+            margin-top: 1rem;
+        }
+
+        .feedback {
+            height: 3rem;
+            margin: 1rem 0;
+            font-weight: bold;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .instruction {
+            color: #95a5a6;
+            font-size: 1rem;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>一年级生字大挑战</h1>
+            <div class="score-board">
+                得分: <span id="score">0</span>
+            </div>
+        </header>
+
+        <main>
+            <div id="game-area">
+                <div id="reading-test" class="test-section">
+                    <div class="char-display" id="char-to-read">?</div>
+                    <div class="options-grid" id="pinyin-options"></div>
+                </div>
+
+                <div id="writing-test" class="test-section hidden">
+                    <div id="character-target"></div>
+                    <div class="controls">
+                        <button id="btn-hint" class="game-btn">提示笔顺</button>
+                        <button id="btn-reset" class="game-btn">重写</button>
+                    </div>
+                    <p class="instruction">请在方格内按照正确的笔顺书写</p>
+                </div>
+            </div>
+            <div id="feedback" class="feedback"></div>
+        </main>
+
+        <footer>
+            <button id="btn-next" class="game-btn hidden">下一个</button>
+            <button id="btn-switch-mode" class="game-btn">切换到笔顺测试</button>
+        </footer>
+    </div>
+
+    <script>
+        // 直接嵌入生字数据
+        const characters = [
+            {"char": "一", "pinyin": "yī", "options": ["yī", "yí", "yì", "yǐ"]},
+            {"char": "二", "pinyin": "èr", "options": ["èr", "ér", "ě", "ē"]},
+            {"char": "三", "pinyin": "sān", "options": ["sān", "sàn", "shān", "shàn"]},
+            {"char": "上", "pinyin": "shàng", "options": ["shàng", "shāng", "xià", "shǎng"]},
+            {"char": "口", "pinyin": "kǒu", "options": ["kǒu", "kōu", "gǒu", "hǒu"]},
+            {"char": "耳", "pinyin": "ěr", "options": ["ěr", "ér", "è", "ē"]},
+            {"char": "目", "pinyin": "mù", "options": ["mù", "mǔ", "mú", "mū"]},
+            {"char": "手", "pinyin": "shǒu", "options": ["shǒu", "shóu", "shòu", "shōu"]},
+            {"char": "日", "pinyin": "rì", "options": ["rì", "mù", "tián", "yuè"]},
+            {"char": "火", "pinyin": "huǒ", "options": ["huǒ", "hóu", "hè", "huā"]},
+            {"char": "田", "pinyin": "tián", "options": ["tián", "diàn", "rì", "kǒu"]},
+            {"char": "禾", "pinyin": "hé", "options": ["hé", "hè", "mù", "shǐ"]},
+            {"char": "云", "pinyin": "yún", "options": ["yún", "yùn", "qù", "huì"]},
+            {"char": "雨", "pinyin": "yǔ", "options": ["yǔ", "yù", "yú", "yū"]},
+            {"char": "虫", "pinyin": "chóng", "options": ["chóng", "zhōng", "chòng", "chóng"]},
+            {"char": "山", "pinyin": "shān", "options": ["shān", "shàn", "shàng", "xiān"]},
+            {"char": "水", "pinyin": "shuǐ", "options": ["shuǐ", "shuì", "shǒu", "shān"]},
+            {"char": "力", "pinyin": "lì", "options": ["lì", "dāo", "jiǔ", "rén"]},
+            {"char": "男", "pinyin": "nán", "options": ["nán", "lán", "nàn", "tián"]},
+            {"char": "土", "pinyin": "tǔ", "options": ["tǔ", "shì", "shàng", "xià"]},
+            {"char": "木", "pinyin": "mù", "options": ["mù", "běn", "hé", "shù"]},
+            {"char": "心", "pinyin": "xīn", "options": ["xīn", "xìng", "bì", "shǒu"]},
+            {"char": "尺", "pinyin": "chǐ", "options": ["chǐ", "shī", "chì", "jǐ"]},
+            {"char": "本", "pinyin": "běn", "options": ["běn", "mù", "tǐ", "bèn"]},
+            {"char": "刀", "pinyin": "dāo", "options": ["dāo", "lì", "rèn", "diāo"]},
+            {"char": "不", "pinyin": "bù", "options": ["bù", "bú", "pǔ", "fǒu"]},
+            {"char": "少", "pinyin": "shǎo", "options": ["shǎo", "shào", "xiǎo", "shā"]},
+            {"char": "中", "pinyin": "zhōng", "options": ["zhōng", "zhòng", "chóng", "kǒu"]},
+            {"char": "五", "pinyin": "wǔ", "options": ["wǔ", "wú", "wù", "ǔ"]},
+            {"char": "风", "pinyin": "fēng", "options": ["fēng", "fèng", "fēn", "fàn"]},
+            {"char": "立", "pinyin": "lì", "options": ["lì", "nì", "shàng", "zhèng"]},
+            {"char": "正", "pinyin": "zhèng", "options": ["zhèng", "zhēng", "zhèn", "zhì"]},
+            {"char": "六", "pinyin": "liù", "options": ["liù", "niù", "lù", "jiǔ"]},
+            {"char": "七", "pinyin": "qī", "options": ["qī", "qí", "xī", "shí"]},
+            {"char": "八", "pinyin": "bā", "options": ["bā", "pá", "rén", "jiǔ"]},
+            {"char": "十", "pinyin": "shí", "options": ["shí", "sì", "shì", "shī"]},
+            {"char": "九", "pinyin": "jiǔ", "options": ["jiǔ", "liù", "jǐ", "jiú"]},
+            {"char": "王", "pinyin": "wáng", "options": ["wáng", "wàng", "yù", "zhǔ"]},
+            {"char": "午", "pinyin": "wǔ", "options": ["wǔ", "niú", "shàng", "xià"]},
+            {"char": "下", "pinyin": "xià", "options": ["xià", "shàng", "xiā", "xiǎ"]},
+            {"char": "个", "pinyin": "gè", "options": ["gè", "rén", "shàng", "xià"]},
+            {"char": "去", "pinyin": "qù", "options": ["qù", "yún", "huì", "qū"]},
+            {"char": "女", "pinyin": "nǚ", "options": ["nǚ", "nǔ", "nǐ", "mā"]},
+            {"char": "开", "pinyin": "kāi", "options": ["kāi", "guān", "shēng", "tiān"]},
+            {"char": "关", "pinyin": "guān", "options": ["guān", "kāi", "tiān", "yún"]},
+            {"char": "先", "pinyin": "xiān", "options": ["xiān", "xiàn", "shēng", "xǐ"]},
+            {"char": "工", "pinyin": "gōng", "options": ["gōng", "gòng", "tǔ", "shàng"]},
+            {"char": "厂", "pinyin": "chǎng", "options": ["chǎng", "guǎng", "shān", "shī"]},
+            {"char": "门", "pinyin": "mén", "options": ["mén", "mèn", "wèn", "shān"]},
+            {"char": "卫", "pinyin": "wèi", "options": ["wèi", "wéi", "wěi", "lì"]},
+            {"char": "爸", "pinyin": "bà", "options": ["bà", "bā", "mā", "yé"]},
+            {"char": "妈", "pinyin": "mā", "options": ["mā", "mǎ", "bà", "nǚ"]},
+            {"char": "牛", "pinyin": "niú", "options": ["niú", "niǔ", "午", "shēng"]},
+            {"char": "羊", "pinyin": "yáng", "options": ["yáng", "yàng", "niú", "shān"]},
+            {"char": "爪", "pinyin": "zhǎo", "options": ["zhǎo", "zhuǎ", "guā", "zhào"]},
+            {"char": "白", "pinyin": "bái", "options": ["bái", "bǎi", "rì", "zì"]},
+            {"char": "了", "pinyin": "le", "options": ["le", "liǎo", "zi", "rén"]},
+            {"char": "子", "pinyin": "zǐ", "options": ["zǐ", "zi", "le", "rén"]},
+            {"char": "大", "pinyin": "dà", "options": ["dà", "xiǎo", "tài", "tiān"]},
+            {"char": "人", "pinyin": "rén", "options": ["rén", "rèn", "dà", "bā"]},
+            {"char": "可", "pinyin": "kě", "options": ["kě", "kè", "hé", "kě"]},
+            {"char": "叶", "pinyin": "yè", "options": ["yè", "yě", "shù", "huā"]},
+            {"char": "东", "pinyin": "dōng", "options": ["dōng", "dòng", "xī", "chē"]},
+            {"char": "西", "pinyin": "xī", "options": ["xī", "xǐ", "dōng", "nán"]},
+            {"char": "竹", "pinyin": "zhú", "options": ["zhú", "zú", "jié", "mǎ"]},
+            {"char": "马", "pinyin": "mǎ", "options": ["mǎ", "mā", "niú", "yáng"]},
+            {"char": "牙", "pinyin": "yá", "options": ["yá", "yǎ", "yè", "yá"]},
+            {"char": "用", "pinyin": "yòng", "options": ["yòng", "yōng", "yuè", "tóng"]},
+            {"char": "几", "pinyin": "jǐ", "options": ["jǐ", "jī", "ér", "jiǔ"]},
+            {"char": "四", "pinyin": "sì", "options": ["sì", "shí", "shì", "sī"]},
+            {"char": "小", "pinyin": "xiǎo", "options": ["xiǎo", "shǎo", "dà", "shān"]},
+            {"char": "鸟", "pinyin": "niǎo", "options": ["niǎo", "niáo", "mǎ", "jī"]},
+            {"char": "是", "pinyin": "shì", "options": ["shì", "shí", "sì", "shī"]},
+            {"char": "天", "pinyin": "tiān", "options": ["tiān", "tián", "dà", "wáng"]},
+            {"char": "月", "pinyin": "yuè", "options": ["yuè", "rì", "mù", "yòng"]},
+            {"char": "儿", "pinyin": "ér", "options": ["ér", "ěr", "jǐ", "ba"]},
+            {"char": "头", "pinyin": "tóu", "options": ["tóu", "tóu", "mǎi", "shí"]},
+            {"char": "里", "pinyin": "lǐ", "options": ["lǐ", "lì", "nǐ", "tián"]},
+            {"char": "见", "pinyin": "jiàn", "options": ["jiàn", "jiān", "bèi", "shì"]},
+            {"char": "在", "pinyin": "zài", "options": ["zài", "zǎi", "zuǒ", "yòu"]},
+            {"char": "我", "pinyin": "wǒ", "options": ["wǒ", "wó", "nǐ", "tā"]},
+            {"char": "左", "pinyin": "zuǒ", "options": ["zuǒ", "yòu", "zài", "shàng"]},
+            {"char": "右", "pinyin": "yòu", "options": ["yòu", "zuǒ", "zài", "xià"]},
+            {"char": "和", "pinyin": "hé", "options": ["hé", "hè", "huó", "hé"]},
+            {"char": "也", "pinyin": "yě", "options": ["yě", "yè", "tā", "wǒ"]},
+            {"char": "又", "pinyin": "yòu", "options": ["yòu", "yǒu", "yōu", "cái"]},
+            {"char": "才", "pinyin": "cái", "options": ["cái", "cài", "yòu", "shàng"]},
+            {"char": "比", "pinyin": "bǐ", "options": ["bǐ", "bì", "pǐ", "bā"]},
+            {"char": "巴", "pinyin": "bā", "options": ["bā", "pá", "bǎ", "ba"]},
+            {"char": "长", "pinyin": "cháng", "options": ["cháng", "zhǎng", "chàng", "duǎn"]},
+            {"char": "公", "pinyin": "gōng", "options": ["gōng", "gòng", "sōng", "fēn"]},
+            {"char": "只", "pinyin": "zhǐ", "options": ["zhǐ", "zhī", "shí", "kǒu"]},
+            {"char": "多", "pinyin": "duō", "options": ["duō", "duó", "shǎo", "xiǎo"]},
+            {"char": "办", "pinyin": "bàn", "options": ["bàn", "wèi", "lì", "shǎo"]},
+            {"char": "石", "pinyin": "shí", "options": ["shí", "shì", "yòu", "kǒu"]},
+            {"char": "出", "pinyin": "chū", "options": ["chū", "chù", "shān", "rù"]},
+            {"char": "来", "pinyin": "lái", "options": ["lái", "lài", "qù", "mǐ"]},
+            {"char": "半", "pinyin": "bàn", "options": ["bàn", "pàn", "píng", "yáng"]},
+            {"char": "你", "pinyin": "nǐ", "options": ["nǐ", "ní", "wǒ", "tā"]},
+            {"char": "有", "pinyin": "yǒu", "options": ["yǒu", "yòu", "wú", "yuè"]}
+        ];
+
+        let currentIndex = 0;
+        let score = 0;
+        let currentMode = 'reading';
+        let writer = null;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function initGame() {
+            shuffleArray(characters);
+            loadCharacter();
+        }
+
+        function loadCharacter() {
+            const charData = characters[currentIndex];
+            const feedback = document.getElementById('feedback');
+            const btnNext = document.getElementById('btn-next');
+            
+            feedback.textContent = '';
+            btnNext.classList.add('hidden');
+
+            if (currentMode === 'reading') {
+                showReadingTest(charData);
+            } else {
+                showWritingTest(charData);
+            }
+        }
+
+        function showReadingTest(charData) {
+            document.getElementById('reading-test').classList.remove('hidden');
+            document.getElementById('writing-test').classList.add('hidden');
+            
+            document.getElementById('char-to-read').textContent = charData.char;
+            const optionsGrid = document.getElementById('pinyin-options');
+            optionsGrid.innerHTML = '';
+
+            const shuffledOptions = [...charData.options];
+            shuffleArray(shuffledOptions);
+
+            shuffledOptions.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => checkReadingAnswer(option, charData.pinyin, btn);
+                optionsGrid.appendChild(btn);
+            });
+        }
+
+        function checkReadingAnswer(selected, correct, btn) {
+            const feedback = document.getElementById('feedback');
+            const allBtns = document.querySelectorAll('.option-btn');
+            
+            allBtns.forEach(b => b.disabled = true);
+
+            if (selected === correct) {
+                btn.classList.add('correct');
+                feedback.textContent = '太棒了！读音正确！';
+                feedback.style.color = '#2ecc71';
+                updateScore(10);
+                document.getElementById('btn-next').classList.remove('hidden');
+            } else {
+                btn.classList.add('wrong');
+                feedback.textContent = `哎呀，再想想。正确读音是：${correct}`;
+                feedback.style.color = '#e74c3c';
+                document.getElementById('btn-next').classList.remove('hidden');
+            }
+        }
+
+        function showWritingTest(charData) {
+            document.getElementById('reading-test').classList.add('hidden');
+            document.getElementById('writing-test').classList.remove('hidden');
+            
+            const target = document.getElementById('character-target');
+            target.innerHTML = '';
+
+            writer = HanziWriter.create('character-target', charData.char, {
+                width: 300,
+                height: 300,
+                showCharacter: false,
+                padding: 5,
+                showOutline: true,
+                strokeAnimationSpeed: 1,
+                delayBetweenStrokes: 200
+            });
+
+            writer.quiz({
+                onMistake: function() {
+                    document.getElementById('feedback').textContent = '笔顺不对哦，再试一次！';
+                    document.getElementById('feedback').style.color = '#e74c3c';
+                },
+                onCorrectStroke: function() {
+                    document.getElementById('feedback').textContent = '好样的！这一笔写对了。';
+                    document.getElementById('feedback').style.color = '#3498db';
+                },
+                onComplete: function() {
+                    document.getElementById('feedback').textContent = '太厉害了！你完成了这个字的笔顺练习！';
+                    document.getElementById('feedback').style.color = '#2ecc71';
+                    updateScore(20);
+                    document.getElementById('btn-next').classList.remove('hidden');
+                }
+            });
+        }
+
+        function updateScore(points) {
+            score += points;
+            document.getElementById('score').textContent = score;
+        }
+
+        document.getElementById('btn-switch-mode').onclick = () => {
+            currentMode = currentMode === 'reading' ? 'writing' : 'reading';
+            document.getElementById('btn-switch-mode').textContent = 
+                currentMode === 'reading' ? '切换到笔顺测试' : '切换到认读测试';
+            loadCharacter();
+        };
+
+        document.getElementById('btn-next').onclick = () => {
+            currentIndex = (currentIndex + 1) % characters.length;
+            loadCharacter();
+        };
+
+        document.getElementById('btn-hint').onclick = () => {
+            if (writer) writer.animateCharacter();
+        };
+
+        document.getElementById('btn-reset').onclick = () => {
+            if (currentMode === 'writing') loadCharacter();
+        };
+
+        initGame();
+    </script>
+</body>
+</html>
